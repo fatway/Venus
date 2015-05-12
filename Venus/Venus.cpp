@@ -40,6 +40,15 @@ CVenusApp theApp;
 
 BOOL CVenusApp::InitInstance()
 {
+	// 防止程序重复启动
+	HANDLE hObject =  CreateMutex(NULL,FALSE,_T("Venus_1101"));
+	if(GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		CloseHandle(hObject);
+		return FALSE;
+	}
+	
+
 	// 如果一个运行在 Windows XP 上的应用程序清单指定要
 	// 使用 ComCtl32.dll 版本 6 或更高版本来启用可视化方式，
 	//则需要 InitCommonControlsEx()。否则，将无法创建窗口。
@@ -66,7 +75,7 @@ BOOL CVenusApp::InitInstance()
 	// 更改用于存储设置的注册表项
 	// TODO: 应适当修改该字符串，
 	// 例如修改为公司或组织名
-	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
+	SetRegistryKey(_T("启明星引导器"));
 
 	/*
 	CDlgStart dlg;
