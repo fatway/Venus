@@ -30,6 +30,15 @@ public:
 	CString GetLocalPath(CString key);
 
 private:
+	// 读取本地文件及信息类函数
+	string GetExePath(void);
+	void CheckFolderExist(string lnkpath);
+	int endsWith(char s1[],char s2[]);
+	void getFiles(string path, vector<ShortCut>& files);
+	wchar_t* CharToWchar(const char* c);
+	bool ReadShortcut(LPWSTR lpwLnkFile, LPSTR lpDescFile);
+
+private:
 	map<CString, CString> index;
 };
 

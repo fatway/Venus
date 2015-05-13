@@ -30,7 +30,6 @@ void CDlgStart::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgStart, CDialogEx)
-	ON_MESSAGE ( WM_USER_DLG, OnMyMessage )
 	ON_MESSAGE ( WM_HOTKEY, OnHotKey )
 	ON_MESSAGE ( WM_SHOW_TASK, OnShowTask )
 	ON_WM_SYSCOMMAND()
@@ -48,7 +47,9 @@ BOOL CDlgStart::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化
 
-	pDlg = NULL;
+	pDlg = new CVenusDlg(this);
+	pDlg->Create(IDD_VENUS_DIALOG);
+	pDlg->SetShowStatus(false);
 
 	// 注册热键
 	if (FALSE == ::RegisterHotKey(this->GetSafeHwnd(), ID_OPEN_USER_DLG, MOD_ALT, VK_SPACE))
@@ -58,7 +59,6 @@ BOOL CDlgStart::OnInitDialog()
 
 	// 启动时不显示窗体
 	ModifyStyleEx(WS_EX_APPWINDOW,WS_EX_TOOLWINDOW);  //从任务栏中去掉
-	//this->ShowWindow(SW_HIDE);
 
 	// 显示托盘图标
 	ShowSys2Task();
@@ -69,42 +69,24 @@ BOOL CDlgStart::OnInitDialog()
 }
 
 
-//wParam接收的是图标的ID，lParam接收的是鼠标的动作  
-LRESULT CDlgStart::OnMyMessage ( WPARAM wParma, LPARAM lParam )
-{
-	//CVenusDlg dlg;
-	//dlg.Create(IDD_VENUS_DIALOG);
-	//dlg.ShowWindow(SW_SHOWNORMAL);
-	CAbout about;
-	about.DoModal();
-	return 0;
-}
-
 LRESULT CDlgStart::OnHotKey ( WPARAM wPARAM, LPARAM lPARAM )
 {
 	if (wPARAM == ID_OPEN_USER_DLG)
 	{
-		if (pDlg == NULL)
+		if ( !pDlg->GetShowStatus() )
 		{
-			pDlg = new CVenusDlg(this);
-			pDlg->Create(IDD_VENUS_DIALOG);
-			pDlg->ShowWindow(SW_SHOWNORMAL);
-			//pDlg->SetFocus();
+			pDlg->SetShowStatus(true);
 
-			// 使新窗口焦点激活
+			// 使新窗口获取系统焦点
 			typedef void (WINAPI *PSWITCHTOTHISWINDOW) (HWND,BOOL);
 			PSWITCHTOTHISWINDOW SwitchToThisWindow;
 			HMODULE hUser32=GetModuleHandle(_T("user32"));
 			SwitchToThisWindow=(PSWITCHTOTHISWINDOW)GetProcAddress(hUser32,"SwitchToThisWindow");
-
-			//现在就可以使用此函数了
 			SwitchToThisWindow(pDlg->GetSafeHwnd(), TRUE);
 		}
 		else
 		{
-			pDlg->DestroyWindow();
-			delete pDlg;
-			pDlg = NULL;
+			pDlg->SetShowStatus(false);
 		}
 	}
 	return 0;
@@ -140,22 +122,7 @@ void CDlgStart::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 
-	/*
-	if(nID == SC_MINIMIZE) // 最小化窗口
-	{
-		NOTIFYICONDATA nid; 
-		nid.cbSize = (DWORD)sizeof(NOTIFYICONDATA); 
-		nid.hWnd = this->m_hWnd; 
-		nid.uID = IDR_MAINFRAME; 
-		nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP ; 
-		nid.uCallbackMessage = WM_SHOW_TASK;        // 自定义的消息名称 
-		nid.hIcon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)); 
-		strcpy_s(nid.szTip, "启明星");              // 信息提示条
-		Shell_NotifyIcon(NIM_ADD, &nid);            // 在托盘区添加图标 
-		ShowWindow(SW_HIDE);                        // 隐藏主窗口 
-		return;
-	}
-	else */ if (nID == SC_CLOSE) // 关闭窗口
+	if (nID == SC_CLOSE) // 关闭窗口
 	{
 		NOTIFYICONDATA nd;
 		nd.cbSize    = sizeof (NOTIFYICONDATA);

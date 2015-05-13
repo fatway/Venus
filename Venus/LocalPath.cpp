@@ -16,7 +16,7 @@ LocalPath::~LocalPath(void)
 }
 
 
-string GetExePath(void)
+string LocalPath::GetExePath(void)
 {
 	char szFilePath[MAX_PATH + 1]={0};
 	GetModuleFileNameA(NULL, szFilePath, MAX_PATH);
@@ -26,7 +26,7 @@ string GetExePath(void)
 }
 
 // 文件夹是否存在，不存在，创建之
-void CheckFolderExist(string lnkpath)
+void LocalPath::CheckFolderExist(string lnkpath)
 {
 	if (PathFileExists(lnkpath.data()))
 	{
@@ -42,7 +42,7 @@ void CheckFolderExist(string lnkpath)
 /** 
  * 字符串s1是否以s2结束 
  */  
-int endsWith(char s1[],char s2[]){  
+int LocalPath::endsWith(char s1[],char s2[]){  
 	int len1 = strlen(s1);
 	int len2 = strlen(s2);
 	int i=len1-1,j=len2-1;
@@ -60,7 +60,7 @@ int endsWith(char s1[],char s2[]){
 	return 1;  
 }
 
-void getFiles(string path, vector<ShortCut>& files) {
+void LocalPath::getFiles(string path, vector<ShortCut>& files) {
 	//文件句柄    
 	long hFile = 0;    
 	//文件信息
@@ -99,7 +99,7 @@ void getFiles(string path, vector<ShortCut>& files) {
 	}
 }
 
-wchar_t* CharToWchar(const char* c)  
+wchar_t* LocalPath::CharToWchar(const char* c)  
 {  
 	int len = MultiByteToWideChar(CP_ACP,0,c,strlen(c),NULL,0);  
 	wchar_t *m_wchar = new wchar_t[len+1];  
@@ -108,7 +108,7 @@ wchar_t* CharToWchar(const char* c)
 	return m_wchar;  
 }
 
-bool ReadShortcut(LPWSTR lpwLnkFile, LPSTR lpDescFile)
+bool LocalPath::ReadShortcut(LPWSTR lpwLnkFile, LPSTR lpDescFile)
 {
 	bool bReturn = true;
 	IShellLink *pShellLink;
@@ -178,8 +178,7 @@ void LocalPath::InitIndex()
 		//index[iter->fileName.data()] = iter->filePath.data();
 		index[iter->fileName.data()] = szBuf;
 	}
-	int b = 1;
-
+	lnkfiles.clear();
 }
 
 // 左匹配键值，得到有效键值列表

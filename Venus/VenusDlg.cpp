@@ -12,17 +12,18 @@
 #define new DEBUG_NEW
 #endif
 
-
 // CVenusDlg 对话框
-
-
-
 
 CVenusDlg::CVenusDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CVenusDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	IDC_MYINFOTEXT = 0;
+}
+CVenusDlg::~CVenusDlg()
+{
+	delete myIndex;
+	delete myInput;
 }
 
 void CVenusDlg::DoDataExchange(CDataExchange* pDX)
@@ -42,6 +43,24 @@ END_MESSAGE_MAP()
 
 // CVenusDlg 消息处理程序
 
+bool CVenusDlg::GetShowStatus()
+{
+	return this->curStatus;
+}
+
+void CVenusDlg::SetShowStatus(bool status)
+{
+	if (status)
+	{
+		this->ShowWindow(SW_SHOWNORMAL);
+	}
+	else
+	{
+		this->ShowWindow(SW_HIDE);
+	}
+	this->curStatus = status;
+}
+
 BOOL CVenusDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -56,6 +75,7 @@ BOOL CVenusDlg::OnInitDialog()
 	IDC_MYINFOTEXT = 63301;
 	myIndex = new LocalPath();
 	lastKey = "";
+	curStatus = false;
 
 	// 设置窗口位置
 	ModifyStyleEx(WS_EX_APPWINDOW,WS_EX_TOOLWINDOW);  //从任务栏中去掉
@@ -68,8 +88,8 @@ BOOL CVenusDlg::OnInitDialog()
 	::SetLayeredWindowAttributes(GetSafeHwnd(),RGB(1,11,21),0,LWA_COLORKEY);
 
 	// 输入框字体大小
-	editFont.CreatePointFont(260,"宋体");
-	CEdit *myInput = (CEdit *)GetDlgItem(IDC_EDIT1);
+	editFont.CreatePointFont(240,"宋体");
+	myInput = (CEdit *)GetDlgItem(IDC_EDIT1);
 	myInput->SetFont(&editFont);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -181,20 +201,23 @@ void CVenusDlg::OnChangeEdit1()
 BOOL CVenusDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
-	if(pMsg->wParam==VK_RETURN)
+	if(pMsg->wParam==VK_RETURN || pMsg->wParam==VK_ESCAPE)
 	{
-		if (lastKey.IsEmpty())
+		// 隐藏窗体
+		SetShowStatus(false);
+
+		// 回车执行当前输入的快捷程序
+		if (!lastKey.IsEmpty() && pMsg->wParam==VK_RETURN)
 		{
-			//MessageBoxA(_T("没办法执行，结果为空"));
-			return TRUE;
-		}
-		else
-		{
-			//MessageBoxA(myIndex->GetLocalPath(lastKey));
 			CString exePath = myIndex->GetLocalPath(lastKey);
 			WinExec(exePath, SW_SHOWNORMAL);
-			//_execl(exePath);
 		}
+
+		// 清空输入内容
+		myInput->SetSel(0, -1);
+		myInput->Clear();
+
+		return FALSE;
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
 }

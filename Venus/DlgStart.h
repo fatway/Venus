@@ -2,7 +2,6 @@
 
 #include "VenusDlg.h"
 
-#define WM_USER_DLG       WM_USER+100
 #define WM_SHOW_TASK      WM_USER+101
 #define ID_OPEN_USER_DLG  WM_USER+102
 
@@ -30,7 +29,6 @@ protected:
 public:
 
 	virtual BOOL OnInitDialog();
-	afx_msg LRESULT OnMyMessage ( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnHotKey ( WPARAM wParam, LPARAM lParam );
 	afx_msg LRESULT OnShowTask ( WPARAM wParam, LPARAM lParam );
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);

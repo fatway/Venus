@@ -12,6 +12,7 @@ class CVenusDlg : public CDialogEx
 // 构造
 public:
 	CVenusDlg(CWnd* pParent = NULL);	// 标准构造函数
+	~CVenusDlg();
 
 // 对话框数据
 	enum { IDD = IDD_VENUS_DIALOG };
@@ -21,8 +22,15 @@ public:
 
 private:
 	LocalPath *myIndex;
+	CEdit *myInput;
 	CFont editFont;
 	CString lastKey;
+	bool curStatus;
+
+public:
+	bool GetShowStatus();
+	void SetShowStatus(bool status);
+
 
 // 实现
 protected:
