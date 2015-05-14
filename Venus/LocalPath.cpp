@@ -6,7 +6,7 @@
 // 构造
 LocalPath::LocalPath(void)
 {
-	InitIndex();
+	//InitIndex();
 }
 
 // 析构
@@ -148,6 +148,7 @@ void LocalPath::InitIndex()
 {
 	index.clear();
 
+	// 常用系统组件
 
 	index[";calc"] = "calc";
 	index[";cmd"] = "cmd";
@@ -170,13 +171,15 @@ void LocalPath::InitIndex()
 
 	for (auto iter=lnkfiles.begin(); iter!=lnkfiles.end(); iter++)
 	{
-		//CString lnk = iter->data();
+		/*
+		// 从lnk中读取文件实际路径
 		wchar_t *lnk = CharToWchar(iter->filePath.c_str());
 		char szBuf[MAX_PATH];
 		ReadShortcut(lnk, szBuf);
-		//MessageBox(0, szBuf, "", 0);
-		//index[iter->fileName.data()] = iter->filePath.data();
 		index[iter->fileName.data()] = szBuf;
+		delete lnk;
+		*/
+		index[iter->fileName.data()] = iter->filePath.c_str();
 	}
 	lnkfiles.clear();
 }

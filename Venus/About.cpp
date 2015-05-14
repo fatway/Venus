@@ -91,7 +91,6 @@ BOOL CAbout::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 
 	// 检查当前是否有自启动项
-	
 	strRegPath = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
 	strMyKey = "Venus";
 	m_button = (CButton *)GetDlgItem(IDC_CHECK1);

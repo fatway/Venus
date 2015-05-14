@@ -41,12 +41,15 @@ CVenusApp theApp;
 BOOL CVenusApp::InitInstance()
 {
 	// 防止程序重复启动
+#ifdef _DEBUG
+#else
 	HANDLE hObject =  CreateMutex(NULL,FALSE,_T("Venus_1101"));
 	if(GetLastError() == ERROR_ALREADY_EXISTS)
 	{
 		CloseHandle(hObject);
 		return FALSE;
 	}
+#endif
 	
 
 	// 如果一个运行在 Windows XP 上的应用程序清单指定要

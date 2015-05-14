@@ -52,6 +52,7 @@ void CVenusDlg::SetShowStatus(bool status)
 {
 	if (status)
 	{
+		myIndex->InitIndex();
 		this->ShowWindow(SW_SHOWNORMAL);
 	}
 	else
@@ -188,7 +189,7 @@ void CVenusDlg::OnChangeEdit1()
 		CLabel *pInfo = new CLabel();
 		pInfo->Create(keyMatch[i], WS_VISIBLE, rect, this, IDC_MYINFOTEXT+i);
 		pInfo->SetTextColor(RGB(255, 255, 255));
-		pInfo->SetFontName("Fixedsys");
+		pInfo->SetFontName("Courier New");
 		pInfo->SetFontSize(labelWidth-1);
 		pInfo->SetFontBold(TRUE);
 		pInfo->SetBkColor(RGB(10, 136, 255));
@@ -210,7 +211,8 @@ BOOL CVenusDlg::PreTranslateMessage(MSG* pMsg)
 		if (!lastKey.IsEmpty() && pMsg->wParam==VK_RETURN)
 		{
 			CString exePath = myIndex->GetLocalPath(lastKey);
-			WinExec(exePath, SW_SHOWNORMAL);
+			//WinExec(exePath, SW_SHOWNORMAL);
+			ShellExecute(this->GetSafeHwnd(), "open", exePath, "", "", SW_SHOW);
 		}
 
 		// Çå¿ÕÊäÈëÄÚÈİ
