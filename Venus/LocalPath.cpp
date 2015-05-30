@@ -7,12 +7,20 @@
 LocalPath::LocalPath(void)
 {
 	//InitIndex();
+	strLocalPath = GetExePath();
+
+	// 确保lnk文件夹存在
+	CheckFolderExist(strLocalPath);
 }
 
 // 析构
 LocalPath::~LocalPath(void)
 {
-	index.clear();
+}
+
+void LocalPath::CleanIndex()
+{
+	this->index.clear();
 }
 
 
@@ -38,6 +46,7 @@ void LocalPath::CheckFolderExist(string lnkpath)
 		CreateDirectory(lnkpath.data(), NULL);
 	}
 }
+
 
 /** 
  * 字符串s1是否以s2结束 
@@ -99,6 +108,7 @@ void LocalPath::getFiles(string path, vector<ShortCut>& files) {
 	}
 }
 
+
 wchar_t* LocalPath::CharToWchar(const char* c)  
 {  
 	int len = MultiByteToWideChar(CP_ACP,0,c,strlen(c),NULL,0);  
@@ -157,17 +167,12 @@ void LocalPath::InitIndex()
 	index[";regedit"] = "regedit";
 	index[";taskmgr"] = "taskmgr";
 
-	string path = GetExePath();
-
-	// 确保lnk文件夹存在
-	CheckFolderExist(path);
-
 	CString lnk_explorer = "";
-	lnk_explorer.Format("explorer /e, %s", path.data());
+	lnk_explorer.Format("explorer /e, %s", strLocalPath.data());
 	index[";lnk"] = lnk_explorer;
 
 	vector<ShortCut> lnkfiles;
-	getFiles(path, lnkfiles);
+	getFiles(strLocalPath, lnkfiles);
 
 	for (auto iter=lnkfiles.begin(); iter!=lnkfiles.end(); iter++)
 	{
@@ -179,9 +184,8 @@ void LocalPath::InitIndex()
 		index[iter->fileName.data()] = szBuf;
 		delete lnk;
 		*/
-		index[iter->fileName.data()] = iter->filePath.c_str();
+		index[iter->fileName.data()] = iter->filePath.data();
 	}
-	lnkfiles.clear();
 }
 
 // 左匹配键值，得到有效键值列表

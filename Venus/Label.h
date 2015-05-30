@@ -5,7 +5,7 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 // Label.h : header file
-//
+// http://www.codeproject.com/Articles/215/Extended-Use-of-CStatic-Class-CLabel
 
 #define	NM_LINKCLICK	WM_APP + 0x200
 

@@ -19,7 +19,7 @@ public:
 	enum { IDD = IDD_DLGSTART };
 
 private:
-	// 创建输入窗体
+	// 输入框窗体
 	CVenusDlg *pDlg;
 
 protected:

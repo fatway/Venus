@@ -6,7 +6,7 @@
 #include "Venus.h"
 #include "VenusDlg.h"
 #include "afxdialogex.h"
-#include "Label.h"
+#include <windows.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -23,7 +23,6 @@ CVenusDlg::CVenusDlg(CWnd* pParent /*=NULL*/)
 CVenusDlg::~CVenusDlg()
 {
 	delete myIndex;
-	delete myInput;
 }
 
 void CVenusDlg::DoDataExchange(CDataExchange* pDX)
@@ -62,6 +61,13 @@ void CVenusDlg::SetShowStatus(bool status)
 	this->curStatus = status;
 }
 
+void CVenusDlg::RunLnkFile(LPSTR path)
+{
+	//WinExec(exePath, SW_SHOWNORMAL);
+	//ShellExecute(NULL, "open", path, NULL, NULL, SW_SHOWNORMAL);   // hack: “open”引起的内存无法释放？
+	ShellExecute(NULL, NULL, path, NULL, NULL, SW_SHOWNORMAL);
+}
+
 BOOL CVenusDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -76,6 +82,7 @@ BOOL CVenusDlg::OnInitDialog()
 	IDC_MYINFOTEXT = 63301;
 	myIndex = new LocalPath();
 	lastKey = "";
+	lastInfoSize = 0;
 	curStatus = false;
 
 	// 设置窗口位置
@@ -90,7 +97,7 @@ BOOL CVenusDlg::OnInitDialog()
 
 	// 输入框字体大小
 	editFont.CreatePointFont(240,"宋体");
-	myInput = (CEdit *)GetDlgItem(IDC_EDIT1);
+	CEdit *myInput = (CEdit *)GetDlgItem(IDC_EDIT1);
 	myInput->SetFont(&editFont);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -149,14 +156,12 @@ void CVenusDlg::OnChangeEdit1()
 	// 函数并调用 CRichEditCtrl().SetEventMask()，
 	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
 
-	// TODO:  在此添加控件通知处理程序代码
-
 	// 清理之前结果
 	lastKey = "";
-	for (int i=0; i< 100; i++)
+	for (int i=0; i<lastInfoSize; ++i)
 	{
-		CStatic *pOldInfo = (CStatic *)GetDlgItem(IDC_MYINFOTEXT+i);
-		delete pOldInfo;
+		myInfoLabel[i]->DestroyWindow();
+		delete myInfoLabel[i];
 	}
 	
 	CString txt;
@@ -166,11 +171,11 @@ void CVenusDlg::OnChangeEdit1()
 	myIndex->FindIndex(txt, keyMatch);
 
 	// 输出标签中每个字符的大小
-	int labelWidth = 30;
-	int labelHeight = 60;
+	int labelWidth = 26;
+	int labelHeight = 50;
 
 	int rect_left = 10;
-	int rect_top = 60;
+	int rect_top = 50;
 
 	for (int i=0; i < keyMatch.size(); i++)
 	{
@@ -178,24 +183,29 @@ void CVenusDlg::OnChangeEdit1()
 		{
 			lastKey = keyMatch[i];
 		}
-		//CStatic *pInfo = new CStatic();
+		if (i >= 50)
+		{
+			break;
+		}
 		CRect rect;
 		rect.left = rect_left;
 		int clen = keyMatch[i].GetLength();
-		rect.right = rect_left + clen * labelWidth;  // 字数
+		rect.right = rect_left + clen * labelWidth;  // 字数动态调整宽度
 		rect.top = rect_top + i * labelHeight;
 		rect.bottom = rect_top + labelHeight * 0.8 + i * labelHeight;
 
-		CLabel *pInfo = new CLabel();
-		pInfo->Create(keyMatch[i], WS_VISIBLE, rect, this, IDC_MYINFOTEXT+i);
-		pInfo->SetTextColor(RGB(255, 255, 255));
-		pInfo->SetFontName("Courier New");
-		pInfo->SetFontSize(labelWidth-1);
-		pInfo->SetFontBold(TRUE);
-		pInfo->SetBkColor(RGB(10, 136, 255));
+		myInfoLabel[i] = new CLabel();
+		myInfoLabel[i]->Create(keyMatch[i], WS_VISIBLE, rect, this, IDC_MYINFOTEXT+i);
+		myInfoLabel[i]->SetTextColor(RGB(255, 255, 255));
+		myInfoLabel[i]->SetFontName("Courier New");
+		myInfoLabel[i]->SetFontSize(labelWidth-1);
+		myInfoLabel[i]->SetFontBold(TRUE);
+		myInfoLabel[i]->SetBkColor(RGB(10, 136, 255));
 	}
 
+	lastInfoSize = keyMatch.size() > 50 ? 50: keyMatch.size();
 	SetWindowPos(NULL, 5, 5, 600, rect_top + (keyMatch.size()+1)*labelHeight, 0);
+	//_CrtDumpMemoryLeaks();  // 检查内存
 }
 
 
@@ -211,11 +221,18 @@ BOOL CVenusDlg::PreTranslateMessage(MSG* pMsg)
 		if (!lastKey.IsEmpty() && pMsg->wParam==VK_RETURN)
 		{
 			CString exePath = myIndex->GetLocalPath(lastKey);
-			//WinExec(exePath, SW_SHOWNORMAL);
-			ShellExecute(this->GetSafeHwnd(), "open", exePath, "", "", SW_SHOW);
+			if (lastKey == ";lnk")
+			{
+				system(exePath);
+			}
+			else
+			{
+				RunLnkFile((LPSTR)(LPCSTR)exePath);
+			}
 		}
 
 		// 清空输入内容
+		CEdit *myInput = (CEdit *)GetDlgItem(IDC_EDIT1);
 		myInput->SetSel(0, -1);
 		myInput->Clear();
 
@@ -234,8 +251,8 @@ HBRUSH CVenusDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	// 改变编辑框文字颜色
 	if (pWnd->GetDlgCtrlID() == IDC_EDIT1)
 	{
-		pDC->SetTextColor(RGB(240, 240, 240));
-		pDC->SetBkColor(RGB(10, 10, 10));
+		pDC->SetTextColor(RGB(248, 252, 255));
+		pDC->SetBkColor(RGB(15, 15, 15));
 	}
 
 	// TODO:  如果默认的不是所需画笔，则返回另一个画笔

@@ -4,6 +4,7 @@
 
 #pragma once
 #include <Windows.h>
+#include "Label.h"
 #include "LocalPath.h"
 
 // CVenusDlg 对话框
@@ -22,14 +23,16 @@ public:
 
 private:
 	LocalPath *myIndex;
-	CEdit *myInput;
+	CLabel *myInfoLabel[50];
 	CFont editFont;
 	CString lastKey;
+	int lastInfoSize;
 	bool curStatus;
 
 public:
 	bool GetShowStatus();
 	void SetShowStatus(bool status);
+	void RunLnkFile(LPSTR path);
 
 
 // 实现

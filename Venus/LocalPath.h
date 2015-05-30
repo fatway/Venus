@@ -28,6 +28,8 @@ public:
 	bool FindIndex(CString key, vector<CString> &matchs);
 	// 精确获取值
 	CString GetLocalPath(CString key);
+	// 清空缓存记录
+	void CleanIndex();
 
 private:
 	// 读取本地文件及信息类函数
@@ -40,5 +42,6 @@ private:
 
 private:
 	map<CString, CString> index;
+	string strLocalPath;
 };
 

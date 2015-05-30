@@ -52,7 +52,11 @@ BOOL CDlgStart::OnInitDialog()
 	pDlg->SetShowStatus(false);
 
 	// 注册热键
-	if (FALSE == ::RegisterHotKey(this->GetSafeHwnd(), ID_OPEN_USER_DLG, MOD_ALT, VK_SPACE))
+	UINT iHotKey = VK_SPACE;
+#ifdef _DEBUG
+	iHotKey = VK_F1;
+#endif
+	if (FALSE == ::RegisterHotKey(this->GetSafeHwnd(), ID_OPEN_USER_DLG, MOD_ALT, iHotKey))
 	{
 		MessageBoxA("注册Alt+Space热键失败，可能被其他程序占用，请检查。", "启明星", MB_ICONWARNING);
 	}
