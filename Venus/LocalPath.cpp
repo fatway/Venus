@@ -162,9 +162,12 @@ void LocalPath::InitIndex()
 
 	index[";calc"] = "calc";
 	index[";cmd"] = "cmd";
+	index[";msconfig"] = "msconfig";
+	index[";mspaint"] = "mspaint";
 	index[";mstsc"] = "mstsc";
 	index[";notepad"] = "notepad";
 	index[";regedit"] = "regedit";
+	index[";services.msc"] = "services.msc";
 	index[";taskmgr"] = "taskmgr";
 
 	CString lnk_explorer = "";

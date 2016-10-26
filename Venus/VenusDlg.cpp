@@ -201,6 +201,7 @@ void CVenusDlg::OnChangeEdit1()
 		myInfoLabel[i]->SetFontSize(labelWidth-1);
 		myInfoLabel[i]->SetFontBold(TRUE);
 		myInfoLabel[i]->SetBkColor(RGB(10, 136, 255));
+		//myInfoLabel[i]->SetTransparent(TRUE);
 	}
 
 	lastInfoSize = keyMatch.size() > 50 ? 50: keyMatch.size();
@@ -217,17 +218,41 @@ BOOL CVenusDlg::PreTranslateMessage(MSG* pMsg)
 		// 隐藏窗体
 		SetShowStatus(false);
 
-		// 回车执行当前输入的快捷程序
-		if (!lastKey.IsEmpty() && pMsg->wParam==VK_RETURN)
+		CString txt;
+		GetDlgItemText(IDC_EDIT1, txt);
+
+		if (pMsg->wParam == VK_RETURN)
 		{
-			CString exePath = myIndex->GetLocalPath(lastKey);
-			if (lastKey == ";lnk")
+			// ctrl + enter 百度搜索输入的关键字
+			if (GetAsyncKeyState(VK_CONTROL)<0)
 			{
-				system(exePath);
+				CString url;
+				url.Format("www.baidu.com/s?wd=%s", txt);
+				ShellExecute(NULL, _T("open"), _T(url), NULL, NULL, SW_SHOWNORMAL);
 			}
+			// shift + enter 查询DICT字典
+			else if (GetAsyncKeyState(VK_SHIFT)<0)
+			{
+				CString url;
+				url.Format("dict.cn/%s", txt);
+				ShellExecute(NULL, _T("open"), _T(url), NULL, NULL, SW_SHOWNORMAL);
+			}
+			// 仅回车时执行当前匹配到快捷程序
 			else
 			{
-				RunLnkFile((LPSTR)(LPCSTR)exePath);
+				if (!lastKey.IsEmpty())
+				{
+					CString exePath = myIndex->GetLocalPath(lastKey);
+					if (lastKey == ";lnk")
+					{
+						system(exePath);
+					}
+					else
+					{
+						RunLnkFile((LPSTR)(LPCSTR)exePath);
+					}
+				}
+
 			}
 		}
 

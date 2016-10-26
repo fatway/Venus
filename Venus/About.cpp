@@ -28,6 +28,7 @@ void CAbout::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAbout, CDialog)
 	ON_BN_CLICKED(IDC_CHECK1, &CAbout::OnBnClickedCheck1)
+	ON_BN_CLICKED(IDC_BUTTON1, &CAbout::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -113,4 +114,17 @@ BOOL CAbout::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
+}
+
+
+void CAbout::OnBnClickedButton1()
+{
+	// 打开安装目录
+	char szFilePath[MAX_PATH + 1]={0};
+	GetModuleFileNameA(NULL, szFilePath, MAX_PATH);
+	(strrchr(szFilePath, '\\'))[0] = 0; // 删除文件名，只获得路径字串
+	char szOpera[MAX_PATH + 1] = "explorer /e \"";
+	strcat_s(szOpera, szFilePath);
+	strcat_s(szOpera, "\"");
+	system(szOpera);
 }

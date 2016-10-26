@@ -30,4 +30,5 @@ protected:
 public:
 	afx_msg void OnBnClickedCheck1();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnBnClickedButton1();
 };
